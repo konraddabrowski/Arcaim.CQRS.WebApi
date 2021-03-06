@@ -9,6 +9,7 @@ namespace Arcaim.CQRS.WebApi
         IEndpointConventionBuilder Get<TQuery, TResult>()
             where TQuery : IQuery<TResult>
             where TResult : class;
+
         IEndpointConventionBuilder Get(RequestDelegate requestDelegate);
     }
 }

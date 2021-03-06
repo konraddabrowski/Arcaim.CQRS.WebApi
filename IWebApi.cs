@@ -5,6 +5,7 @@ namespace Arcaim.CQRS.WebApi
     public interface IWebApi : ICommandApi, IQueryApi
     {
         IEndpointRouteBuilder Builder { get; }
-        string Pattern { get; }
+        string Pattern { get; init; }
+        string PatternAction { get; set; }
     }
 }
