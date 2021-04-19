@@ -15,9 +15,9 @@
 
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
-        <PackageReference Include="FluentValidation" Version="9.3.0">
+        <!-- <PackageReference Include="FluentValidation" Version="10.0.4">
             <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
+        </PackageReference> -->
         <PackageReference Include="Arcaim.CQRS.Commands" Version="1.1.0" />
         <PackageReference Include="Arcaim.CQRS.Queries" Version="1.0.0" />
         <!-- <PackageReference Include="Arcaim.CQRS.Commands" Version="1.0.12">
@@ -33,7 +33,7 @@
     <ItemGroup><!-- <ProjectReference Include="..\Arcaim.CQRS.Queries\Arcaim.CQRS.Queries.csproj" />
       <ProjectReference Include="..\Arcaim.CQRS.Commands\Arcaim.CQRS.Commands.csproj" /> -->
     
-      <ProjectReference Include="..\Arcaim.DI.Scanner\Arcaim.DI.Scanner.csproj" />
+        <ProjectReference Include="..\Arcaim.DI.Scanner\Arcaim.DI.Scanner.csproj" />
     </ItemGroup>
 
 

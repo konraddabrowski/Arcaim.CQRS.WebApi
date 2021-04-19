@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Routing;
 
-namespace Arcaim.CQRS.WebApi
+namespace Arcaim.CQRS.WebApi.Interfaces
 {
     public interface IWebApi : ICommandApi, IQueryApi
     {

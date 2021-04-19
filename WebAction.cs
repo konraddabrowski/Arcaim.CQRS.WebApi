@@ -1,6 +1,7 @@
 using System;
 using Arcaim.CQRS.Commands;
 using Arcaim.CQRS.Queries;
+using Arcaim.CQRS.WebApi.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 

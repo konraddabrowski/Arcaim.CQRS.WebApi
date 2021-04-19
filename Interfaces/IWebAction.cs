@@ -3,7 +3,7 @@ using Arcaim.CQRS.Commands;
 using Arcaim.CQRS.Queries;
 using Microsoft.AspNetCore.Builder;
 
-namespace Arcaim.CQRS.WebApi
+namespace Arcaim.CQRS.WebApi.Interfaces
 {
     public interface IWebAction
     {

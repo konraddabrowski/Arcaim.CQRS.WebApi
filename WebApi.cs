@@ -1,5 +1,7 @@
+using System.Threading.Tasks;
 using Arcaim.CQRS.Commands;
 using Arcaim.CQRS.Queries;
+using Arcaim.CQRS.WebApi.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -24,13 +26,6 @@ namespace Arcaim.CQRS.WebApi
             Pattern = pattern;
         }
 
-        // public IEndpointConventionBuilder Head<T>()
-        //     where T : IQuery
-        //     => Builder.MapMethods(Pattern, new [] { nameof(T) }, async ctx => {
-        //         await Builder.GetService<IQueryDispatcher>()
-        //             .DispatchAsync(await ctx.GetHeader<T>());
-        //     });
-
         public IEndpointConventionBuilder Get(RequestDelegate requestDelegate)
             => Builder.MapGet(Pattern, requestDelegate);
 
@@ -39,9 +34,12 @@ namespace Arcaim.CQRS.WebApi
             where S : class
             => Builder.MapGet(Pattern, async ctx =>
             {
+                var model = await ctx.GetModel<T>();
+
+                await ValidateAsync(model);
                 var result = await Builder
                     .GetService<IQueryDispatcher>()
-                    .DispatchAsync(await ctx.GetModel<T>());
+                    .DispatchAsync(model);
 
                 ctx.Return(result);
             });
@@ -50,24 +48,51 @@ namespace Arcaim.CQRS.WebApi
             => Builder.MapPost(Pattern, requestDelegate);
 
         public IEndpointConventionBuilder Post<T>() where T : ICommand
-            => Builder.MapPost(Pattern, async ctx => await Builder
-            .GetService<ICommandDispatcher>()
-            .DispatchAsync(await ctx.GetModel<T>()));
+            => Builder.MapPost(Pattern, async ctx =>
+            {
+                var model = await ctx.GetModel<T>();
+
+                await ValidateAsync(model);
+                await Builder.GetService<ICommandDispatcher>()
+                    .DispatchAsync(model);
+            });
 
         public IEndpointConventionBuilder Put(RequestDelegate requestDelegate)
             => Builder.MapPut(Pattern, requestDelegate);
 
         public IEndpointConventionBuilder Put<T>() where T : ICommand
-            => Builder.MapPut(Pattern, async ctx => await Builder
-            .GetService<ICommandDispatcher>()
-            .DispatchAsync(await ctx.GetModel<T>()));
+            => Builder.MapPut(Pattern, async ctx =>
+            {
+                var model = await ctx.GetModel<T>();
+
+                await ValidateAsync(model);
+                await Builder.GetService<ICommandDispatcher>()
+                    .DispatchAsync(await ctx.GetModel<T>());
+            });
 
         public IEndpointConventionBuilder Delete(RequestDelegate requestDelegate)
             => Builder.MapDelete(Pattern, requestDelegate);
 
         public IEndpointConventionBuilder Delete<T>() where T : ICommand
-            => Builder.MapDelete(Pattern, async ctx => await Builder
-            .GetService<ICommandDispatcher>()
-            .DispatchAsync(await ctx.GetModel<T>()));
+            => Builder.MapDelete(Pattern, async ctx =>
+            {
+                var model = await ctx.GetModel<T>();
+
+                await ValidateAsync(model);
+                await Builder.GetService<ICommandDispatcher>()
+                    .DispatchAsync(await ctx.GetModel<T>());
+            });
+
+        private async Task ValidateAsync<T>(T instance)
+        {
+            var validatorService = Builder.GetService<IValidatorService>();
+            var validateAttributeService = Builder.GetService<IValidateAttributeService>();
+            if (validatorService is not null &&
+                validateAttributeService is not null &&
+                validateAttributeService.IsValidateAttributeImplemented<T>())
+            {
+                await validatorService.ValidateAsync(instance);
+            }
+        }
     }
 }

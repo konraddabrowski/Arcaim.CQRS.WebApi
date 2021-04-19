@@ -2,7 +2,7 @@ using Arcaim.CQRS.Commands;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
-namespace Arcaim.CQRS.WebApi
+namespace Arcaim.CQRS.WebApi.Interfaces
 {
     public interface ICommandApi
     {
