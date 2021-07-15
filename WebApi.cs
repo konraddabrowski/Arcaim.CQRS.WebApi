@@ -1,16 +1,20 @@
+using System;
 using System.Threading.Tasks;
 using Arcaim.CQRS.Commands;
 using Arcaim.CQRS.Queries;
+using Arcaim.CQRS.WebApi.Exceptions;
 using Arcaim.CQRS.WebApi.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Arcaim.CQRS.WebApi
 {
     public class WebApi : IWebApi
     {
-        public IEndpointRouteBuilder Builder { get; }
+        public IEndpointRouteBuilder EndpointRouteBuilder { get; }
+        public IApplicationBuilder ApplicationBuilder { get; }
         private string _pattern;
         public string Pattern
         {
@@ -20,24 +24,25 @@ namespace Arcaim.CQRS.WebApi
 
         public string PatternAction { get; set; }
 
-        public WebApi(IEndpointRouteBuilder builder, string pattern)
+        public WebApi(IEndpointRouteBuilder endpointRouteBuilder, string pattern)
         {
-            Builder = builder;
+            EndpointRouteBuilder = endpointRouteBuilder;
             Pattern = pattern;
         }
 
         public IEndpointConventionBuilder Get(RequestDelegate requestDelegate)
-            => Builder.MapGet(Pattern, requestDelegate);
+            => EndpointRouteBuilder.MapGet(Pattern, requestDelegate);
 
         public IEndpointConventionBuilder Get<T, S>()
             where T : IQuery<S>
             where S : class
-            => Builder.MapGet(Pattern, async ctx =>
+            => EndpointRouteBuilder.MapGet(Pattern, async ctx =>
             {
                 var model = await ctx.GetModel<T>();
 
+                await AuthorizeAsync(model);
                 await ValidateAsync(model);
-                var result = await Builder
+                var result = await EndpointRouteBuilder
                     .GetService<IQueryDispatcher>()
                     .DispatchAsync(model);
 
@@ -45,51 +50,72 @@ namespace Arcaim.CQRS.WebApi
             });
 
         public IEndpointConventionBuilder Post(RequestDelegate requestDelegate)
-            => Builder.MapPost(Pattern, requestDelegate);
+            => EndpointRouteBuilder.MapPost(Pattern, requestDelegate);
 
         public IEndpointConventionBuilder Post<T>() where T : ICommand
-            => Builder.MapPost(Pattern, async ctx =>
+            => EndpointRouteBuilder.MapPost(Pattern, async ctx =>
             {
                 var model = await ctx.GetModel<T>();
 
+                await AuthorizeAsync(model);
                 await ValidateAsync(model);
-                await Builder.GetService<ICommandDispatcher>()
+                await EndpointRouteBuilder.GetService<ICommandDispatcher>()
                     .DispatchAsync(model);
             });
 
         public IEndpointConventionBuilder Put(RequestDelegate requestDelegate)
-            => Builder.MapPut(Pattern, requestDelegate);
+            => EndpointRouteBuilder.MapPut(Pattern, requestDelegate);
 
         public IEndpointConventionBuilder Put<T>() where T : ICommand
-            => Builder.MapPut(Pattern, async ctx =>
+            => EndpointRouteBuilder.MapPut(Pattern, async ctx =>
             {
                 var model = await ctx.GetModel<T>();
 
+                await AuthorizeAsync(model);
                 await ValidateAsync(model);
-                await Builder.GetService<ICommandDispatcher>()
+                await EndpointRouteBuilder.GetService<ICommandDispatcher>()
                     .DispatchAsync(await ctx.GetModel<T>());
             });
 
         public IEndpointConventionBuilder Delete(RequestDelegate requestDelegate)
-            => Builder.MapDelete(Pattern, requestDelegate);
+            => EndpointRouteBuilder.MapDelete(Pattern, requestDelegate);
 
         public IEndpointConventionBuilder Delete<T>() where T : ICommand
-            => Builder.MapDelete(Pattern, async ctx =>
+            => EndpointRouteBuilder.MapDelete(Pattern, async ctx =>
             {
                 var model = await ctx.GetModel<T>();
 
+                await AuthorizeAsync(model);
                 await ValidateAsync(model);
-                await Builder.GetService<ICommandDispatcher>()
+                await EndpointRouteBuilder.GetService<ICommandDispatcher>()
                     .DispatchAsync(await ctx.GetModel<T>());
             });
 
+        private async Task AuthorizeAsync<T>(T instance)
+        {
+            var serviceFactory = EndpointRouteBuilder.GetService<IServiceScopeFactory>();
+            var authorizeAttributeService = EndpointRouteBuilder.GetService<IAuthorizeAttributeService>();
+            if (authorizeAttributeService is null || !authorizeAttributeService.IsDecorated<T>())
+            {
+                return;
+            }
+
+            using var scope = serviceFactory.CreateScope();
+            var authorizeService = scope.ServiceProvider.GetService<IAuthorization>();
+            if (authorizeService is not null)
+            {
+                authorizeService.SetRequiredRoles(authorizeAttributeService.RequiredRoles<T>());
+                await authorizeService.AuthorizeAsync();
+            }
+        }
+
         private async Task ValidateAsync<T>(T instance)
         {
-            var validatorService = Builder.GetService<IValidatorService>();
-            var validateAttributeService = Builder.GetService<IValidateAttributeService>();
+            var validatorService = EndpointRouteBuilder.GetService<IValidator>();
+            var validateAttributeService = EndpointRouteBuilder.GetService<IValidateAttributeService>();
             if (validatorService is not null &&
                 validateAttributeService is not null &&
-                validateAttributeService.IsValidateAttributeImplemented<T>())
+                validateAttributeService.IsDecorated<T>())
             {
                 await validatorService.ValidateAsync(instance);
             }

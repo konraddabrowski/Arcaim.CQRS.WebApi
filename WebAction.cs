@@ -16,8 +16,8 @@ namespace Arcaim.CQRS.WebApi
         public WebAction(IWebApi webApi)
         {
             _webApi = webApi;
-            _commandDispatcher = _webApi.Builder.ServiceProvider.GetService<ICommandDispatcher>();
-            _queryDispatcher = _webApi.Builder.ServiceProvider.GetService<IQueryDispatcher>();
+            _commandDispatcher = _webApi.EndpointRouteBuilder.ServiceProvider.GetService<ICommandDispatcher>();
+            _queryDispatcher = _webApi.EndpointRouteBuilder.ServiceProvider.GetService<IQueryDispatcher>();
         }
 
         public IWebAction Action(Func<ICommandDispatcher, IQueryDispatcher, IEndpointConventionBuilder> requestDelegate)

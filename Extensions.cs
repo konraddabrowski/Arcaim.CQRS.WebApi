@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Arcaim.CQRS.Commands;
 using Arcaim.CQRS.Queries;
 using Arcaim.CQRS.WebApi.Interfaces;
+using Arcaim.CQRS.WebApi.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,7 @@ namespace Arcaim.CQRS.WebApi
         public static IServiceCollection AddWebApi(this IServiceCollection services)
         {
             services.AddSingleton<IValidateAttributeService, ValidateAttributeService>();
+            services.AddSingleton<IAuthorizeAttributeService, AuthorizeAttributeService>();
             services.AddCommandSeparation();
             services.AddQuerySeparation();
 

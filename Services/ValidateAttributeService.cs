@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Arcaim.CQRS.WebApi.Attributes;
 using Arcaim.CQRS.WebApi.Interfaces;
 
-namespace Arcaim.CQRS.WebApi
+namespace Arcaim.CQRS.WebApi.Services
 {
     internal class ValidateAttributeService : IValidateAttributeService
     {
-        private readonly HashSet<Type> _implementedValidateAttributeList = new HashSet<Type>();
+        private readonly HashSet<Type> _attributeList = new HashSet<Type>();
 
         public ValidateAttributeService()
-            => FindAllMethodParametersForValidateAttributeFromAssembly();
+            => FindAllMethodsDecoratedByAttribute();
 
-        private void FindAllMethodParametersForValidateAttributeFromAssembly()
+        private void FindAllMethodsDecoratedByAttribute()
         {
             var assemblies = Directory
                 .GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll")
@@ -24,11 +25,11 @@ namespace Arcaim.CQRS.WebApi
                 .Where(method => method.GetCustomAttribute<ValidateAttribute>() is not null)
                 .SelectMany(methodInfo => methodInfo.GetParameters())
                 .ToList().ForEach(x =>
-                    _implementedValidateAttributeList.Add(x.ParameterType)
+                    _attributeList.Add(x.ParameterType)
                 );
         }
 
-        public bool IsValidateAttributeImplemented<T>()
-            => _implementedValidateAttributeList.Contains(typeof(T));
+        public bool IsDecorated<T>()
+            => _attributeList.Contains(typeof(T));
     }
 }
