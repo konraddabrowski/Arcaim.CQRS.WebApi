@@ -10,31 +10,14 @@
         <Title>Arcaim.CQRS.WebApi</Title>
         <PackageId>Arcaim.CQRS.WebApi</PackageId>
         <Company>Arcaim</Company>
-        <Version>1.0.0</Version>
+        <Version>1.1.0</Version>
     </PropertyGroup>
 
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
-        <!-- <PackageReference Include="FluentValidation" Version="10.0.4">
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference> -->
         <PackageReference Include="Arcaim.CQRS.Commands" Version="1.1.0" />
         <PackageReference Include="Arcaim.CQRS.Queries" Version="1.0.0" />
-        <!-- <PackageReference Include="Arcaim.CQRS.Commands" Version="1.0.12">
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference> -->
-        <!-- <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0">
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference> -->
+        <PackageReference Include="Arcaim.DI.Scanner" Version="1.0.0" />
     </ItemGroup>
-
-    
-
-    <ItemGroup><!-- <ProjectReference Include="..\Arcaim.CQRS.Queries\Arcaim.CQRS.Queries.csproj" />
-      <ProjectReference Include="..\Arcaim.CQRS.Commands\Arcaim.CQRS.Commands.csproj" /> -->
-    
-        <ProjectReference Include="..\Arcaim.DI.Scanner\Arcaim.DI.Scanner.csproj" />
-    </ItemGroup>
-
 
 </Project>
