@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Arcaim.CQRS.Commands;
 using Arcaim.CQRS.Queries;
+using Arcaim.CQRS.WebApi.HttpFilter;
 using Arcaim.CQRS.WebApi.Interfaces;
 using Arcaim.CQRS.WebApi.Services;
 using Microsoft.AspNetCore.Http;
@@ -16,6 +17,8 @@ namespace Arcaim.CQRS.WebApi
         {
             services.AddSingleton<IValidateAttributeService, ValidateAttributeService>();
             services.AddSingleton<IAuthorizeAttributeService, AuthorizeAttributeService>();
+            services.AddSingleton<IFilterManager, FilterManager>();
+
             services.AddCommandSeparation();
             services.AddQuerySeparation();
 
