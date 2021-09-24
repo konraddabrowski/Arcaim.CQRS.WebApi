@@ -8,7 +8,7 @@ using Arcaim.CQRS.WebApi.Interfaces;
 
 namespace Arcaim.CQRS.WebApi.Services
 {
-    internal class ValidateAttributeService : IValidateAttributeService
+    internal sealed class ValidateAttributeService : IValidateAttributeService
     {
         private readonly HashSet<Type> _attributeList = new HashSet<Type>();
 

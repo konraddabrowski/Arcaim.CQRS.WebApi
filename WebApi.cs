@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Routing;
 
 namespace Arcaim.CQRS.WebApi
 {
-    public class WebApi : IWebApi
+    internal sealed class WebApi : IWebApi
     {
         public IEndpointRouteBuilder EndpointRouteBuilder { get; }
         public IApplicationBuilder ApplicationBuilder { get; }
@@ -49,7 +49,7 @@ namespace Arcaim.CQRS.WebApi
         public IEndpointConventionBuilder Post(RequestDelegate requestDelegate)
             => EndpointRouteBuilder.MapPost(Pattern, requestDelegate);
 
-        public IEndpointConventionBuilder Post<T>() where T : ICommand
+        public IEndpointConventionBuilder Post<T>() where T : class, ICommand
             => EndpointRouteBuilder.MapPost(Pattern, async ctx =>
             {
                 var instance = await ctx.GetModel<T>();
@@ -63,7 +63,7 @@ namespace Arcaim.CQRS.WebApi
         public IEndpointConventionBuilder Put(RequestDelegate requestDelegate)
             => EndpointRouteBuilder.MapPut(Pattern, requestDelegate);
 
-        public IEndpointConventionBuilder Put<T>() where T : ICommand
+        public IEndpointConventionBuilder Put<T>() where T : class, ICommand
             => EndpointRouteBuilder.MapPut(Pattern, async ctx =>
             {
                 var instance = await ctx.GetModel<T>();
@@ -77,7 +77,7 @@ namespace Arcaim.CQRS.WebApi
         public IEndpointConventionBuilder Delete(RequestDelegate requestDelegate)
             => EndpointRouteBuilder.MapDelete(Pattern, requestDelegate);
 
-        public IEndpointConventionBuilder Delete<T>() where T : ICommand
+        public IEndpointConventionBuilder Delete<T>() where T : class, ICommand
             => EndpointRouteBuilder.MapDelete(Pattern, async ctx =>
             {
                 var instance = await ctx.GetModel<T>();

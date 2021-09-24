@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Arcaim.CQRS.WebApi.HttpFilter
 {
-    public class ValidationFilter : Filter
+    internal sealed class ValidationFilter : Filter
     {
         public override async Task Invoke<T>(T instance, IServiceScopeFactory serviceScopeFactory)
         {

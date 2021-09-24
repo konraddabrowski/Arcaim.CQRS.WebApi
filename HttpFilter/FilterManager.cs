@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 
 namespace Arcaim.CQRS.WebApi.HttpFilter
 {
-    public class FilterManager : IFilterManager
+    internal sealed class FilterManager : IFilterManager
     {
         private AbstractFilterChain _filterChain;
 

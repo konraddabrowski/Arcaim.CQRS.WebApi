@@ -10,13 +10,18 @@
         <Title>Arcaim.CQRS.WebApi</Title>
         <PackageId>Arcaim.CQRS.WebApi</PackageId>
         <Company>Arcaim</Company>
-        <Version>1.1.1</Version>
+        <Version>1.3.0</Version>
     </PropertyGroup>
 
     <ItemGroup>
-        <FrameworkReference Include="Microsoft.AspNetCore.App" />
-        <PackageReference Include="Arcaim.CQRS.Commands" Version="1.1.0" />
-        <PackageReference Include="Arcaim.CQRS.Queries" Version="1.0.0" />
+        <FrameworkReference Include="Microsoft.AspNetCore.App">
+            <PrivateAssets>all</PrivateAssets>
+        </FrameworkReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Arcaim.CQRS.Commands" Version="1.3.0" />
+        <PackageReference Include="Arcaim.CQRS.Queries" Version="1.3.0" />
         <PackageReference Include="Arcaim.DI.Scanner" Version="1.0.0" />
     </ItemGroup>
 

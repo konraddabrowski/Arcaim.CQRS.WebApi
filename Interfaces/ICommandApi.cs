@@ -6,11 +6,11 @@ namespace Arcaim.CQRS.WebApi.Interfaces
 {
     public interface ICommandApi
     {
-        IEndpointConventionBuilder Post<T>() where T : ICommand;
+        IEndpointConventionBuilder Post<T>() where T : class, ICommand;
         IEndpointConventionBuilder Post(RequestDelegate requestDelegate);
-        IEndpointConventionBuilder Put<T>() where T : ICommand;
+        IEndpointConventionBuilder Put<T>() where T : class, ICommand;
         IEndpointConventionBuilder Put(RequestDelegate requestDelegate);
-        IEndpointConventionBuilder Delete<T>() where T : ICommand;
+        IEndpointConventionBuilder Delete<T>() where T : class, ICommand;
         IEndpointConventionBuilder Delete(RequestDelegate requestDelegate);
     }
 }

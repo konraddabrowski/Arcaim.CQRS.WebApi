@@ -7,7 +7,7 @@ using Arcaim.CQRS.WebApi.Attributes;
 
 namespace Arcaim.CQRS.WebApi.Services
 {
-    internal class AuthorizeAttributeService : IAuthorizeAttributeService
+    internal sealed class AuthorizeAttributeService : IAuthorizeAttributeService
     {
         private readonly HashSet<Type> _classTypes = new HashSet<Type>();
         private readonly HashSet<Type> _genericTypeArguments = new HashSet<Type>();
