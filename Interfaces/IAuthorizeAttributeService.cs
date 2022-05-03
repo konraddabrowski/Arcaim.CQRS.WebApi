@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 
-namespace Arcaim.CQRS.WebApi
+namespace Arcaim.CQRS.WebApi;
+
+internal interface IAuthorizeAttributeService
 {
-    internal interface IAuthorizeAttributeService
-    {
-        bool IsDecorated<T>();
-        IEnumerable<IEnumerable<string>> RequiredRoles<T>();
-    }
+  bool IsDecorated<T>();
+  IEnumerable<IEnumerable<string>> RequiredRoles<T>();
 }

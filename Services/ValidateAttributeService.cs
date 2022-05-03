@@ -6,30 +6,29 @@ using System.Reflection;
 using Arcaim.CQRS.WebApi.Attributes;
 using Arcaim.CQRS.WebApi.Interfaces;
 
-namespace Arcaim.CQRS.WebApi.Services
+namespace Arcaim.CQRS.WebApi.Services;
+
+internal sealed class ValidateAttributeService : IValidateAttributeService
 {
-    internal sealed class ValidateAttributeService : IValidateAttributeService
-    {
-        private readonly HashSet<Type> _attributeList = new HashSet<Type>();
+  private readonly HashSet<Type> _attributeList = new HashSet<Type>();
 
-        public ValidateAttributeService()
-            => FindAllMethodsDecoratedByAttribute();
+  public ValidateAttributeService()
+      => FindAllMethodsDecoratedByAttribute();
 
-        private void FindAllMethodsDecoratedByAttribute()
-        {
-            var assemblies = Directory
-                .GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll")
-                .Select(x => Assembly.Load(AssemblyName.GetAssemblyName(x)));
+  private void FindAllMethodsDecoratedByAttribute()
+  {
+    var assemblies = Directory
+      .GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll")
+      .Select(x => Assembly.Load(AssemblyName.GetAssemblyName(x)));
 
-            assemblies.SelectMany(assembly => assembly.GetTypes().SelectMany(type => type.GetMethods()))
-                .Where(method => method.GetCustomAttribute<ValidateAttribute>() is not null)
-                .SelectMany(methodInfo => methodInfo.GetParameters())
-                .ToList().ForEach(x =>
-                    _attributeList.Add(x.ParameterType)
-                );
-        }
+    assemblies.SelectMany(assembly => assembly.GetTypes().SelectMany(type => type.GetMethods()))
+      .Where(method => method.GetCustomAttribute<ValidateAttribute>() is not null)
+      .SelectMany(methodInfo => methodInfo.GetParameters())
+      .ToList().ForEach(x =>
+        _attributeList.Add(x.ParameterType)
+      );
+  }
 
-        public bool IsDecorated<T>()
-            => _attributeList.Contains(typeof(T));
-    }
+  public bool IsDecorated<T>()
+    => _attributeList.Contains(typeof(T));
 }

@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Arcaim.CQRS.WebApi.Interfaces
+namespace Arcaim.CQRS.WebApi.Interfaces;
+
+public interface IAuthorization
 {
-    public interface IAuthorization
-    {
-        Task AuthorizeAsync();
-        void SetRequiredRoles(IEnumerable<IEnumerable<string>> enumerable);
-    }
+  Task AuthorizeAsync();
+  void SetRequiredRoles(IEnumerable<IEnumerable<string>> enumerable);
 }

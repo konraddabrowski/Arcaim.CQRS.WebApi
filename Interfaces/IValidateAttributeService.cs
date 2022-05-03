@@ -1,7 +1,6 @@
-namespace Arcaim.CQRS.WebApi.Interfaces
+namespace Arcaim.CQRS.WebApi.Interfaces;
+
+internal interface IValidateAttributeService
 {
-    internal interface IValidateAttributeService
-    {
-        bool IsDecorated<T>();
-    }
+  bool IsDecorated<T>();
 }

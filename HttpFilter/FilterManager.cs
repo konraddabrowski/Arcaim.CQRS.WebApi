@@ -1,17 +1,16 @@
 using System.Threading.Tasks;
 
-namespace Arcaim.CQRS.WebApi.HttpFilter
+namespace Arcaim.CQRS.WebApi.HttpFilter;
+
+internal sealed class FilterManager : IFilterManager
 {
-    internal sealed class FilterManager : IFilterManager
-    {
-        private AbstractFilterChain _filterChain;
+  private AbstractFilterChain _filterChain;
 
-        public FilterManager(AbstractFilterChain filterChain)
-        {
-            _filterChain = filterChain;
-        }
+  public FilterManager(AbstractFilterChain filterChain)
+  {
+      _filterChain = filterChain;
+  }
 
-        public async Task InvokeFiltersAsync<T>(T instance)
-            => await _filterChain.InvokeFiltersAsync(instance);
-    }
+  public async Task InvokeFiltersAsync<T>(T instance)
+    => await _filterChain.InvokeFiltersAsync(instance);
 }

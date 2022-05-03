@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
 
-namespace Arcaim.CQRS.WebApi.Interfaces
+namespace Arcaim.CQRS.WebApi.Interfaces;
+
+public interface IValidator
 {
-    public interface IValidator
-    {
-        Task ValidateAsync<T>(T instance);
-    }
+  Task ValidateAsync<T>(T instance);
 }
