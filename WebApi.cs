@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Arcaim.CQRS.Commands;
 using Arcaim.CQRS.Queries;
@@ -37,6 +38,24 @@ internal sealed class WebApi : IWebApi
     => EndpointRouteBuilder.MapGet(Pattern, async ctx =>
     {
       var instance = await ctx.GetModel<T>();
+
+      await InvokeFilters(instance);
+      var result = await EndpointRouteBuilder
+        .GetService<IQueryDispatcher>()
+        .DispatchAsync(instance);
+
+      ctx.Return(result);
+    });
+  
+  public IEndpointConventionBuilder Get<T, S>(T instance)
+    where T : IQuery<S>
+    where S : class
+    => EndpointRouteBuilder.MapGet(Pattern, async ctx =>
+    {
+      if (instance is null)
+      {
+        throw new ArgumentNullException(nameof(instance));
+      }
 
       await InvokeFilters(instance);
       var result = await EndpointRouteBuilder

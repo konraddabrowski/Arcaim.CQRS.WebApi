@@ -9,6 +9,10 @@ public interface IQueryApi
   IEndpointConventionBuilder Get<TQuery, TResult>()
     where TQuery : IQuery<TResult>
     where TResult : class;
+  
+  IEndpointConventionBuilder Get<TQuery, TResult>(TQuery instance)
+    where TQuery : IQuery<TResult>
+    where TResult : class;
 
   IEndpointConventionBuilder Get(RequestDelegate requestDelegate);
 }
