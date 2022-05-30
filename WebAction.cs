@@ -102,9 +102,9 @@ public class WebAction : IWebAction
 
   private void SetPatternAction(string pattern)
   {
-    if (string.IsNullOrWhiteSpace(pattern))
+    if (pattern is null)
     {
-        throw new ArgumentException();
+      throw new ArgumentException();
     }
 
     _webApi.PatternAction = $"{pattern}";

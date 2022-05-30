@@ -1,5 +1,8 @@
 using System;
+using System.ComponentModel;
+using System.Globalization;
 using System.Threading.Tasks;
+using System.Web;
 using Arcaim.CQRS.Commands;
 using Arcaim.CQRS.Queries;
 using Arcaim.CQRS.WebApi.HttpFilter;
@@ -39,9 +42,37 @@ public static class Extensions
   public static T GetService<T>(this IEndpointRouteBuilder builder)
     => builder.ServiceProvider.GetService<T>();
 
-  public static async Task<T> GetModel<T>(this HttpContext context)
-    => await context.Request.ReadFromJsonAsync<T>();
+  public static T GetModelFromQueryString<T>(this HttpContext context) where T : new()
+  {
+    var entity = new T();
+    var properties = typeof(T).GetProperties();
+    foreach (var property in properties)
+    {
+      var valueAsString = context.Request.Query[property.Name];
+      object value = Parse(property.PropertyType, valueAsString);
 
-  public static void Return<T>(this HttpContext context, T result) where T : class
+      if (value == null)
+      continue;
+
+      property.SetValue(entity, value, null);
+    }
+
+    return entity;
+  }
+
+  private static object Parse(Type dataType, string ValueToConvert)
+  {
+    TypeConverter entity = TypeDescriptor.GetConverter(dataType);
+    object value = entity.ConvertFromString(null, CultureInfo.InvariantCulture, ValueToConvert);
+
+    return value;
+  }
+
+  public static async Task<T> GetModelFromJsonAsync<T>(this HttpContext context) where T : class
+  {
+    return await context.Request.ReadFromJsonAsync<T>();
+  }
+
+  public static void Return<T>(this HttpContext context, T result) where T : new()
     => context.Response.WriteAsJsonAsync(result).Wait();
 }

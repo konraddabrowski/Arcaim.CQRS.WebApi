@@ -33,11 +33,13 @@ internal sealed class WebApi : IWebApi
     => EndpointRouteBuilder.MapGet(Pattern, requestDelegate);
 
   public IEndpointConventionBuilder Get<T, S>()
-    where T : IQuery<S>
-    where S : class
+    where T : IQuery<S>, new()
+    where S : new()
     => EndpointRouteBuilder.MapGet(Pattern, async ctx =>
     {
-      var instance = await ctx.GetModel<T>();
+      var instance = ctx.Request.QueryString.HasValue
+        ? ctx.GetModelFromQueryString<T>()
+        : new T();
 
       await InvokeFilters(instance);
       var result = await EndpointRouteBuilder
@@ -47,31 +49,13 @@ internal sealed class WebApi : IWebApi
       ctx.Return(result);
     });
   
-  public IEndpointConventionBuilder Get<T, S>(T instance)
-    where T : IQuery<S>
-    where S : class
-    => EndpointRouteBuilder.MapGet(Pattern, async ctx =>
-    {
-      if (instance is null)
-      {
-        throw new ArgumentNullException(nameof(instance));
-      }
-
-      await InvokeFilters(instance);
-      var result = await EndpointRouteBuilder
-        .GetService<IQueryDispatcher>()
-        .DispatchAsync(instance);
-
-      ctx.Return(result);
-    });
-
   public IEndpointConventionBuilder Post(RequestDelegate requestDelegate)
     => EndpointRouteBuilder.MapPost(Pattern, requestDelegate);
 
   public IEndpointConventionBuilder Post<T>() where T : class, ICommand
     => EndpointRouteBuilder.MapPost(Pattern, async ctx =>
     {
-      var instance = await ctx.GetModel<T>();
+      var instance = await ctx.GetModelFromJsonAsync<T>();
 
       await InvokeFilters(instance);
       await EndpointRouteBuilder
@@ -85,7 +69,7 @@ internal sealed class WebApi : IWebApi
   public IEndpointConventionBuilder Put<T>() where T : class, ICommand
     => EndpointRouteBuilder.MapPut(Pattern, async ctx =>
     {
-      var instance = await ctx.GetModel<T>();
+      var instance = await ctx.GetModelFromJsonAsync<T>();
 
       await InvokeFilters(instance);
       await EndpointRouteBuilder
@@ -99,7 +83,7 @@ internal sealed class WebApi : IWebApi
   public IEndpointConventionBuilder Delete<T>() where T : class, ICommand
     => EndpointRouteBuilder.MapDelete(Pattern, async ctx =>
     {
-      var instance = await ctx.GetModel<T>();
+      var instance = await ctx.GetModelFromJsonAsync<T>();
 
       await InvokeFilters(instance);
       await EndpointRouteBuilder.GetService<ICommandDispatcher>()

@@ -7,12 +7,8 @@ namespace Arcaim.CQRS.WebApi.Interfaces;
 public interface IQueryApi
 {
   IEndpointConventionBuilder Get<TQuery, TResult>()
-    where TQuery : IQuery<TResult>
-    where TResult : class;
+    where TQuery : IQuery<TResult>, new()
+    where TResult : new();
   
-  IEndpointConventionBuilder Get<TQuery, TResult>(TQuery instance)
-    where TQuery : IQuery<TResult>
-    where TResult : class;
-
   IEndpointConventionBuilder Get(RequestDelegate requestDelegate);
 }
