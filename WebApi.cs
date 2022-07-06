@@ -37,9 +37,17 @@ internal sealed class WebApi : IWebApi
     where S : new()
     => EndpointRouteBuilder.MapGet(Pattern, async ctx =>
     {
-      var instance = ctx.Request.QueryString.HasValue
-        ? ctx.GetModelFromQueryString<T>()
-        : new T();
+      var instance = new T();
+
+      if (ctx.Request.QueryString.HasValue)
+      {
+        instance = ctx.GetModelFromQueryString<T>();
+      }
+
+      if (ctx.Request.ContentType == "application/json")
+      {
+        instance = await ctx.GetModelFromJsonAsync<T>();
+      }
 
       await InvokeFilters(instance);
       var result = await EndpointRouteBuilder
@@ -52,7 +60,7 @@ internal sealed class WebApi : IWebApi
   public IEndpointConventionBuilder Post(RequestDelegate requestDelegate)
     => EndpointRouteBuilder.MapPost(Pattern, requestDelegate);
 
-  public IEndpointConventionBuilder Post<T>() where T : class, ICommand
+  public IEndpointConventionBuilder Post<T>() where T : ICommand, new()
     => EndpointRouteBuilder.MapPost(Pattern, async ctx =>
     {
       var instance = await ctx.GetModelFromJsonAsync<T>();
@@ -66,7 +74,7 @@ internal sealed class WebApi : IWebApi
   public IEndpointConventionBuilder Put(RequestDelegate requestDelegate)
     => EndpointRouteBuilder.MapPut(Pattern, requestDelegate);
 
-  public IEndpointConventionBuilder Put<T>() where T : class, ICommand
+  public IEndpointConventionBuilder Put<T>() where T : ICommand, new()
     => EndpointRouteBuilder.MapPut(Pattern, async ctx =>
     {
       var instance = await ctx.GetModelFromJsonAsync<T>();
@@ -80,7 +88,7 @@ internal sealed class WebApi : IWebApi
   public IEndpointConventionBuilder Delete(RequestDelegate requestDelegate)
     => EndpointRouteBuilder.MapDelete(Pattern, requestDelegate);
 
-  public IEndpointConventionBuilder Delete<T>() where T : class, ICommand
+  public IEndpointConventionBuilder Delete<T>() where T : ICommand, new()
     => EndpointRouteBuilder.MapDelete(Pattern, async ctx =>
     {
       var instance = await ctx.GetModelFromJsonAsync<T>();

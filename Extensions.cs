@@ -68,7 +68,7 @@ public static class Extensions
     return value;
   }
 
-  public static async Task<T> GetModelFromJsonAsync<T>(this HttpContext context) where T : class
+  public static async Task<T> GetModelFromJsonAsync<T>(this HttpContext context) where T : new()
   {
     return await context.Request.ReadFromJsonAsync<T>();
   }
